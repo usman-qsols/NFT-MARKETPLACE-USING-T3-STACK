@@ -1,6 +1,6 @@
 import Head from "next/head";
 import Link from "next/link";
-
+import Hero from "../components/layout/hero";
 import { api } from "~/utils/api";
 import dynamic from "next/dynamic";
 // Use inter from next/font
@@ -8,6 +8,7 @@ import { Inter } from "next/font/google";
 import { Suspense, useEffect } from "react";
 import { useRouter } from "next/router";
 import Navbar from "../components/layout/navbar";
+import icon from "../utilities/CC.png";
 
 // Dynamically import the `Wallet` component to make sure we don't get SSR errors
 const Login = dynamic(
@@ -26,8 +27,8 @@ export default function Home() {
   console.log("wallet address user name", data.data?.user?.wallet_address);
 
   useEffect(() => {
-    let smartAccount = localStorage.getItem("smartAccount");
-    // if (smartAccount !== "123") {
+    let user = localStorage.getItem("user");
+    // if (!user) {
     //   router.push("/login");
     // }
   });
@@ -49,8 +50,7 @@ export default function Home() {
       </Head>
       <main className={inter.className}>
         <Suspense fallback={<div>Loading...</div>}>
-          <Navbar />
-          <button onClick={clicked}>Click mutate</button>
+          <Hero create="Create" classname="hidden" />
         </Suspense>
       </main>
     </>
