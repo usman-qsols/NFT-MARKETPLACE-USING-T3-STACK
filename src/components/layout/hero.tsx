@@ -1,12 +1,15 @@
+import { ConnectButton } from "@rainbow-me/rainbowkit";
 import Router, { useRouter } from "next/router";
 import { api } from "~/utils/api";
+import { useAccount } from "wagmi";
 export default function Hero(props: any) {
   const router = useRouter();
+  const { isConnected } = useAccount();
 
   const { mutateAsync, error } = api.nft.createNft.useMutation();
 
   const handleCreate = () => {
-    if (localStorage.getItem("user")) {
+    if (isConnected) {
       router.push("/createNft");
     } else {
       alert("Please Login first");
@@ -27,9 +30,9 @@ export default function Hero(props: any) {
           </p>
 
           <div className="btn-group">
-            <button className={`btn ${props.hidden}`} onClick={props.onclick}>
+            {/* <button className={`btn ${props.hidden}`} onClick={props.onclick}>
               <span>{props.loginlogoutbtn}</span>
-            </button>
+            </button> */}
 
             <button className="btn" onClick={handleCreate}>
               <span>{props.create}</span>

@@ -1,6 +1,7 @@
 import Head from "next/head";
 import Link from "next/link";
 import Hero from "../components/layout/hero";
+import "@rainbow-me/rainbowkit/styles.css";
 import { api } from "~/utils/api";
 import dynamic from "next/dynamic";
 // Use inter from next/font

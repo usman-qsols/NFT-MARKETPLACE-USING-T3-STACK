@@ -19,6 +19,9 @@ import {
   MenubarSubTrigger,
   MenubarTrigger,
 } from "../ui/ui/menubar";
+import { ConnectButton } from "@rainbow-me/rainbowkit";
+import { useAccount } from "wagmi";
+import { ZeroDevWeb3Auth } from "@zerodev/web3auth";
 
 type User = {
   balance: number;
@@ -39,6 +42,7 @@ function Navbar() {
   const [email, setEmail] = useState<String>("");
   const [user, setUser] = useState<User>();
   const router = useRouter();
+  const { isConnected, address } = useAccount();
   // let user: User = JSON.parse(localStorage.getItem("user") ?? "");
   // let user: User;
   // useEffect(() => {
@@ -50,6 +54,10 @@ function Navbar() {
   // });
 
   // let user: User;
+  // const zeroDevWeb3Auth = new ZeroDevWeb3Auth([
+  //   "aec66fa3-9e4f-4d6a-a5a8-7172d367b286",
+  // ]);
+  // console.log("user info", zeroDevWeb3Auth.getUserInfo());
 
   let wallet_address: string;
   useEffect(() => {
@@ -58,7 +66,7 @@ function Navbar() {
   });
 
   const handleCreate = () => {
-    if (localStorage.getItem("user")) {
+    if (isConnected) {
       router.push("/createNft");
     } else {
       alert("Please Login first");
@@ -159,8 +167,9 @@ function Navbar() {
       >
         <div className="text-sm lg:flex-grow">
           <a
-            href="/exploreNfts"
+            // href="/exploreNfts"
             className={`text-white-200 mr-8 mt-4 block text-[1.6rem] font-bold hover:text-purple-600 active:text-red-500 lg:mt-0 lg:inline-block`}
+            onClick={() => router.push("/exploreNfts")}
           >
             Explore Nfts
           </a>
@@ -213,10 +222,7 @@ function Navbar() {
         </a> */}
         </div>
         <div>
-          {/* <button className="inline-flex items-center border-0 bg-red-900 px-4 py-2 text-white">
-          Click Me
-        </button> */}
-          {data ? (
+          {/* {data ? (
             <div className="flex flex-row">
               <p
                 className="btn mr-4 flex h-20 w-[180px] justify-center text-[1.8rem]"
@@ -232,14 +238,10 @@ function Navbar() {
               </button>
             </div>
           ) : (
-            // <Button
-            //   variant="destructive"
-            //   className="rounded bg-red-900 text-lg"
-            // >
-            //   Login
-            // </Button>
+
             ""
-          )}
+          )} */}
+          <ConnectButton label="Login" />
         </div>
       </div>
     </nav>

@@ -4,8 +4,12 @@ import logoImage from "../../utilities/logoImage.png";
 import linkedin from "../../utilities/linkedin.png";
 import github from "../../utilities/github.png";
 import facebook from "../../utilities/facebook.png";
+import { useAccount } from "wagmi";
+import { useRouter } from "next/router";
 
 const Footer = () => {
+  const { isConnected, address } = useAccount();
+  const router = useRouter();
   return (
     <footer className="footer">
       <div className="container">
@@ -27,7 +31,10 @@ const Footer = () => {
 
             <ul className="social-list">
               <li>
-                <a href="#" className="social-link">
+                <a
+                  href="https://www.linkedin.com/in/usman-rahim-2000urk/"
+                  className="social-link"
+                >
                   <Image
                     src={linkedin}
                     alt="linked"
@@ -37,7 +44,10 @@ const Footer = () => {
               </li>
 
               <li>
-                <a href="#" className="social-link">
+                <a
+                  href="https://github.com/usman-2000/"
+                  className="social-link"
+                >
                   <Image
                     src={github}
                     alt="linked"
@@ -47,7 +57,7 @@ const Footer = () => {
               </li>
 
               <li>
-                <a href="#" className="social-link">
+                <a href="www.facebook.com" className="social-link">
                   <Image
                     src={facebook}
                     alt="linked"
@@ -71,7 +81,10 @@ const Footer = () => {
             </li>
 
             <li>
-              <a href="exploreNfts" className="footer-link">
+              <a
+                onClick={() => router.push("/exploreNfts")}
+                className="footer-link"
+              >
                 All NFTs
               </a>
             </li>
@@ -83,19 +96,28 @@ const Footer = () => {
             </li>
 
             <li>
-              <a href="createNft" className="footer-link">
+              <a
+                className="footer-link"
+                onClick={() => router.push("/createNft")}
+              >
                 Create
               </a>
             </li>
 
             <li>
-              <a href="/exploreNfts" className="footer-link">
+              <a
+                onClick={() => router.push("/exploreNfts")}
+                className="footer-link"
+              >
                 Explore
               </a>
             </li>
 
             <li>
-              <a href="#" className="footer-link">
+              <a
+                onClick={() => router.push("/exploreNfts")}
+                className="footer-link"
+              >
                 Privacy & Terms
               </a>
             </li>
