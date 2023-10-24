@@ -7,6 +7,8 @@ import { useEffect, useState } from "react";
 import { ethers } from "ethers";
 import { ChainId } from "@biconomy/core-types";
 import minilogo from "../../utilities/minilogo.png";
+import { useSelector, useDispatch } from "react-redux";
+import { setSmartAccount } from "~/redux/features/SmartAccountSlicer";
 import {
   BiconomySmartAccount,
   BiconomySmartAccountConfig,
@@ -21,11 +23,13 @@ import { CHAIN_NAMESPACES, WALLET_ADAPTERS } from "@web3auth/base";
 export default function RegisterPage() {
   // const toast = useToast();
   const [isLoading, setIsLoading] = useState(false);
+  const [web3auth, setWeb3auth] = useState<Web3Auth | null>(null);
   const router = useRouter();
-  // const dispatch = useDispatch();
+  const clientId: any = process.env.NEXT_PUBLIC_CLIENT_ID; // get from https://dashboard.web3auth.io
+  const dispatch = useDispatch();
 
   // Login Mutation
-  const loginUser = api.user.createUser.useMutation({
+  const loginUser = api.user?.createUser.useMutation({
     onSuccess: (res: any) => {
       console.log(res.user, "login res");
     },
@@ -43,9 +47,6 @@ export default function RegisterPage() {
   });
 
   // Check web3Auth---------
-  const clientId: any = process.env.NEXT_PUBLIC_CLIENT_ID; // get from https://dashboard.web3auth.io
-
-  const [web3auth, setWeb3auth] = useState<Web3Auth | null>(null);
 
   useEffect(() => {
     const init = async () => {
@@ -53,9 +54,13 @@ export default function RegisterPage() {
         const web3auth = new Web3Auth({
           clientId,
           uiConfig: {
-            appName: "Cryptocrafters", // <-- Your dApp Name
-            appLogo: { minilogo }, // Your dApp Logo URL
-            theme: "light", // "light" | "dark" | "auto"
+            mode: "light",
+            appName: "CryptoCrafters", // <-- Your dApp Name
+            logoLight:
+              "https://dewey.tailorbrands.com/production/brand_version_mockup_image/74/8654086074_82e61b24-f6ce-49a1-8687-9f85974b0b0b.png?cb=1697809904",
+            theme: {
+              primary: "#ffffff",
+            }, // "light" | "dark" | "auto"
             defaultLanguage: "en", // en, de, ja, ko, zh, es, fr, pt, nl
             loginGridCol: 2, // 2 | 3
             // primaryButton: "externalLogin", // "externalLogin" | "socialLogin" | "emailLogin"
@@ -134,10 +139,10 @@ export default function RegisterPage() {
                 },
               },
             },
-            // [WALLET_ADAPTERS.WALLET_CONNECT_V1]: {
-            //   label: "wallet_connect",
-            //   showOnModal: false,
-            // },
+            [WALLET_ADAPTERS.WALLET_CONNECT_V2]: {
+              label: "wallet_connect",
+              showOnModal: false,
+            },
             [WALLET_ADAPTERS.WALLET_CONNECT_V2]: {
               label: "wallet_connect",
               showOnModal: false,
@@ -194,9 +199,9 @@ export default function RegisterPage() {
       let email = (await userInfo)?.email;
 
       let value: any = {
-        wallet_address: address,
         full_name: name,
         email_address: email,
+        wallet_address: address,
       };
 
       let response = await loginUser.mutateAsync(value);
@@ -212,7 +217,7 @@ export default function RegisterPage() {
       }
 
       localStorage.setItem("user", JSON.stringify(response.user));
-      // dispatch(setSmartAccount(smartAccount));
+      dispatch(setSmartAccount(smartAccount));
 
       router.push("/");
     } catch (e) {
@@ -317,7 +322,11 @@ export default function RegisterPage() {
         </svg>
       </section> */}
       {user ? (
-        <Hero create="Create" loginlogoutbtn="Logout" onclick={loginHandle} />
+        <Hero
+          create="Create"
+          loginlogoutbtn="Logout"
+          onclick={"logoutHandle"}
+        />
       ) : (
         <Hero create="Create" loginlogoutbtn="Login" onclick={loginHandle} />
       )}

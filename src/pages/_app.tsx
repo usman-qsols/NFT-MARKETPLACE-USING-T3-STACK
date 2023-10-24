@@ -6,13 +6,16 @@ import "~/styles/globals.css";
 import "@biconomy/web3-auth/dist/src/style.css";
 import Navbar from "~/components/layout/navbar";
 import Footer from "~/components/layout/footer";
+import { ReduxProviders } from "../redux/provider";
 
 const MyApp: AppType = ({ Component, pageProps }) => {
   return (
     <>
-      <Navbar />
-      <Component {...pageProps} />
-      <Footer />
+      <ReduxProviders>
+        <Navbar />
+        <Component {...pageProps} />
+        <Footer />
+      </ReduxProviders>
     </>
   );
 };

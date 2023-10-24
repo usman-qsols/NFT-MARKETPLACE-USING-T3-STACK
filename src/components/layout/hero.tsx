@@ -1,6 +1,17 @@
 import Router, { useRouter } from "next/router";
+import { api } from "~/utils/api";
 export default function Hero(props: any) {
   const router = useRouter();
+
+  const { mutateAsync, error } = api.nft.createNft.useMutation();
+
+  const handleCreate = () => {
+    if (localStorage.getItem("user")) {
+      router.push("/createNft");
+    } else {
+      alert("Please Login first");
+    }
+  };
   return (
     <>
       <section className="hero" id="home">
@@ -16,11 +27,11 @@ export default function Hero(props: any) {
           </p>
 
           <div className="btn-group">
-            <button className={`btn`} onClick={props.onclick}>
+            <button className={`btn ${props.hidden}`} onClick={props.onclick}>
               <span>{props.loginlogoutbtn}</span>
             </button>
 
-            <button className="btn" onClick={() => router.push("/createNft")}>
+            <button className="btn" onClick={handleCreate}>
               <span>{props.create}</span>
             </button>
           </div>

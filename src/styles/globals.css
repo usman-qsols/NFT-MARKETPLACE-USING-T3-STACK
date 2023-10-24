@@ -198,6 +198,24 @@ body {
   gap: 5px;
 }
 
+.disableBtn{  
+  color: var(--white);
+  font-weight: var(--fw-700);
+  /* border: 2px solid var(--white); */
+  padding: var(--padding, 4px 10px);
+  border-radius: 50px;
+  background-color: gray;
+  display: flex;
+  align-items: center;
+  gap: 5px;}
+.disableBtn:is(:hover, :focus) {
+  background-image: gray;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 120% 120%;
+  border-color: transparent;
+}
+
 .btn ion-icon {
   font-size: 1.8rem;
 }

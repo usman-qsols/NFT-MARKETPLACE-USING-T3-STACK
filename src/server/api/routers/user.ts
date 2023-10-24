@@ -1,4 +1,4 @@
-import { z } from "zod";
+import { string, z } from "zod";
 
 import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
 import {
@@ -27,6 +27,8 @@ export const userRouter = createTRPCRouter({
         });
       }
     }),
+
+  // getSingleUser:publicProcedure.input(z.object{wallet_address:string}).query()
 
   createUser: publicProcedure
     .input(createUserSchema)

@@ -35,19 +35,18 @@ model AdminUser {
 }
 
 model Nft {
-    id              String    @id @default(auto()) @map("_id") @db.ObjectId
-    title           String
-    active          Boolean?
-    price           String?
-    ipfsHash        String?
-    description     String?
-    token_id        String?
-    contractAddress String?
-    ownerAddress    String?
-    sellerAddress   String?
-    created_at      DateTime  @default(now())
-    updated_at      DateTime  @default(now()) @updatedAt
-    end_date        DateTime?
+    id           String   @id @default(auto()) @map("_id") @db.ObjectId
+    title        String
+    active       Boolean? @default(false)
+    price        String?
+    ipfsHash     String?
+    description  String?
+    tokenId      String?
+    // contractAddress String?
+    ownerAddress String?
+    // sellerAddress String?
+    created_at   DateTime @default(now())
+    updated_at   DateTime @default(now()) @updatedAt
 
     @@map("store_nfts")
 }

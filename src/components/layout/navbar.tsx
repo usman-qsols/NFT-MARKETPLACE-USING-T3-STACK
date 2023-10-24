@@ -32,41 +32,61 @@ type User = {
 
 function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
-  const [data, setData] = useState(true);
+  const [pageOpen, setPageOpen] = useState(false);
+  const [data, setData] = useState(false);
   const [walletAddress, setWalletAddress] = useState("");
+  const [name, setName] = useState<String>("");
+  const [email, setEmail] = useState<String>("");
+  const [user, setUser] = useState<User>();
   const router = useRouter();
   // let user: User = JSON.parse(localStorage.getItem("user") ?? "");
   // let user: User;
   // useEffect(() => {
-  //   user = localStorage.getItem("user");
+  //   const storedUser = localStorage.getItem("user");
+  //   setUser(JSON.parse(storedUser));
   // if (!user) {
   //   router.push("/login");
   // }
   // });
 
-  let user: User;
-  let name;
-  let email;
+  // let user: User;
+
   let wallet_address: string;
+  useEffect(() => {
+    setPageOpen(true);
+    console.log("hhehehhe");
+  });
+
+  const handleCreate = () => {
+    if (localStorage.getItem("user")) {
+      router.push("/createNft");
+    } else {
+      alert("Please Login first");
+    }
+  };
 
   useEffect(() => {
+    console.log("Hello");
     const storedUser = localStorage.getItem("user");
-    if (storedUser !== null) {
-      user = JSON.parse(storedUser);
-      console.log(user);
+    if (storedUser && storedUser !== null) {
+      setUser(JSON.parse(storedUser));
+      console.log("userr", user);
       if (user) {
         console.log("user", user);
-        name = user.full_name;
-        email = user.email_address;
+        setName(user.full_name);
+        setEmail(user.email_address);
         wallet_address = user.wallet_address;
-        setWalletAddress(walletAddress);
+        setWalletAddress(wallet_address);
         console.log("name", name);
         console.log("email", email);
         console.log("addr", wallet_address);
         setData(true);
       }
+      if (!user) {
+        router.push("/login");
+      }
     }
-  }, []);
+  }, [pageOpen]);
 
   // useEffect(() => {
 
@@ -140,13 +160,14 @@ function Navbar() {
         <div className="text-sm lg:flex-grow">
           <a
             href="/exploreNfts"
-            className="text-white-200 mr-8 mt-4 block text-[1.6rem] font-bold hover:text-purple-600 active:text-red-500 lg:mt-0 lg:inline-block"
+            className={`text-white-200 mr-8 mt-4 block text-[1.6rem] font-bold hover:text-purple-600 active:text-red-500 lg:mt-0 lg:inline-block`}
           >
             Explore Nfts
           </a>
           <a
-            href="/createNft"
-            className="text-white-200 mr-8 mt-4 block text-[1.6rem] font-bold hover:text-purple-600 active:text-red-500 lg:mt-0 lg:inline-block"
+            // href="/createNft"
+            onClick={handleCreate}
+            className="text-white-200 mr-8 mt-4 block cursor-pointer text-[1.6rem] font-bold hover:text-purple-600 active:text-red-500 lg:mt-0 lg:inline-block"
           >
             Create Nft
           </a>
@@ -163,13 +184,13 @@ function Navbar() {
                   <MenubarContent>
                     {/* <MenubarRadioGroup value="benoit"> */}
                     <MenubarRadioItem value="andy" className="text-[1.3rem]">
-                      {name ?? "Usman Rahim"}
+                      {name}
                     </MenubarRadioItem>
                     <MenubarRadioItem value="benoit" className="text-[1.3rem]">
-                      {email ?? "usmanrahim2000@gmail.com"}
+                      {email}
                     </MenubarRadioItem>
                     <MenubarRadioItem value="Luis" className="text-[1.3rem]">
-                      {walletAddress ?? "0x00000000000000000000000000000000000"}
+                      {walletAddress}
                     </MenubarRadioItem>
                     {/* </MenubarRadioGroup> */}
                     {/* <MenubarSeparator />
@@ -201,7 +222,7 @@ function Navbar() {
                 className="btn mr-4 flex h-20 w-[180px] justify-center text-[1.8rem]"
                 onClick={copyAddress}
               >
-                0x00000000...
+                {walletAddress.slice(0, 10)}...
               </p>
               <button
                 className="btn flex h-20 w-[120px] justify-center text-[1.8rem]"

@@ -5,7 +5,7 @@ import { api } from "~/utils/api";
 import dynamic from "next/dynamic";
 // Use inter from next/font
 import { Inter } from "next/font/google";
-import { Suspense, useEffect } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import Navbar from "../components/layout/navbar";
 import icon from "../utilities/CC.png";
@@ -17,7 +17,19 @@ const Login = dynamic(
 );
 const inter = Inter({ subsets: ["latin"] });
 
+type User = {
+  balance: number;
+  created_at: string;
+  email_address: string;
+  full_name: string;
+  id: string;
+  updated_at: string;
+  wallet_address: string;
+};
+
 export default function Home() {
+  const [pageOpen, setPageOpen] = useState(false);
+  const [user, setUser] = useState<User>();
   // const hello = api.post.hello.useQuery({ text: "from tRPC" });
   const router = useRouter();
   const data = api.user.getUser.useQuery({ wallet_address: "0x12313123" });
@@ -25,13 +37,27 @@ export default function Home() {
 
   console.log("wallet address user name", data.data?.user?.full_name);
   console.log("wallet address user name", data.data?.user?.wallet_address);
-
   useEffect(() => {
-    let user = localStorage.getItem("user");
-    // if (!user) {
-    //   router.push("/login");
-    // }
+    setPageOpen(true);
+    console.log("hhehehhe");
   });
+  // useEffect(() => {
+  //   console.log("Hello");
+  //   const storedUser: any = localStorage.getItem("user");
+  //   setUser(JSON.parse(storedUser));
+  //   console.log("userr", user);
+
+  //   if (!user) {
+  //     router.push("/login");
+  //   }
+  // }, [pageOpen]);
+
+  // useEffect(() => {
+  //   let user = localStorage.getItem("user");
+  // if (!user) {
+  //   router.push("/login");
+  // }
+  // });
 
   const clicked = () => {
     mutateAsync({
@@ -50,7 +76,7 @@ export default function Home() {
       </Head>
       <main className={inter.className}>
         <Suspense fallback={<div>Loading...</div>}>
-          <Hero create="Create" classname="hidden" />
+          <Hero create="Create" hidden="hidden" />
         </Suspense>
       </main>
     </>

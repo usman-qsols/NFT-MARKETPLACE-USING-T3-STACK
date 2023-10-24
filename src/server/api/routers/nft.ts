@@ -7,9 +7,19 @@ import {
   getNftSchema,
   getUserNftSchema,
   updateNftSchema,
+  buyNftSchema,
+  ListNFTSchema,
 } from "../../../schema/nft";
 
 export const nftRouter = createTRPCRouter({
+  all: publicProcedure.query(async ({ ctx }) => {
+    return ctx.db.nft.findMany({
+      orderBy: {
+        created_at: "asc",
+      },
+    });
+  }),
+
   createNft: publicProcedure
     .input(createNftSchema)
     .mutation(async ({ ctx, input }) => {
@@ -22,9 +32,7 @@ export const nftRouter = createTRPCRouter({
           !input.tokenId &&
           !input.ownerAddress &&
           !input.price &&
-          !input.active &&
-          !input.contractAddress &&
-          !input.sellerAddress
+          !input.active
         ) {
           throw new TRPCError({
             code: "FORBIDDEN",
@@ -38,15 +46,14 @@ export const nftRouter = createTRPCRouter({
             ipfsHash: input.ipfsHash,
             price: input.price,
             ownerAddress: input.ownerAddress,
-            contractAddress: input.contractAddress,
             active: input.active,
           };
           console.log(paylaod, "paylaod");
-          const user = await ctx.db.nft.create({
+          const nftCreated = await ctx.db.nft.create({
             data: paylaod,
           });
-          console.log(user, "user");
-          return user;
+          console.log(nftCreated, "nftCreated");
+          return nftCreated;
         }
       } catch (error: any) {
         console.log("data error", error);
@@ -57,7 +64,7 @@ export const nftRouter = createTRPCRouter({
       }
     }),
 
-  getNftListed: publicProcedure.query(async ({ ctx }) => {
+  getNftListed: publicProcedure.input(getNftSchema).query(async ({ ctx }) => {
     try {
       const response = await ctx.db.nft.findMany({
         where: {

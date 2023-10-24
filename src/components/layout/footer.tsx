@@ -31,7 +31,7 @@ const Footer = () => {
                   <Image
                     src={linkedin}
                     alt="linked"
-                    className="h-18 w-28 contrast-200 grayscale filter hover:opacity-50"
+                    className="h-12 w-12 contrast-200 grayscale filter hover:opacity-50"
                   ></Image>
                 </a>
               </li>
@@ -41,7 +41,7 @@ const Footer = () => {
                   <Image
                     src={github}
                     alt="linked"
-                    className="h-18 w-28 contrast-200 grayscale filter hover:opacity-50"
+                    className="h-12 w-12 contrast-200 grayscale filter hover:opacity-50"
                   ></Image>
                 </a>
               </li>
@@ -51,7 +51,7 @@ const Footer = () => {
                   <Image
                     src={facebook}
                     alt="linked"
-                    className="h-18 w-28 contrast-200 grayscale filter hover:opacity-50"
+                    className="h-12 w-12 contrast-200 grayscale filter hover:opacity-50"
                   ></Image>
                 </a>
               </li>

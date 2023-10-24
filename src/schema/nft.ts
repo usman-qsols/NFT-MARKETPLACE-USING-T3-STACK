@@ -16,13 +16,18 @@ export const createNftSchema = z.object({
   description: z.string(),
   ipfsHash: z.string(),
   ownerAddress: z.string(),
-  contractAddress: z.string(),
-  sellerAddress: z.string(),
   tokenId: z.string(),
   active: z.boolean(),
 });
 
 export type CreateNftInput = z.TypeOf<typeof createNftSchema>;
+
+export const ListNFTSchema = z.object({
+  tokenId: z.string(),
+  price: z.string(),
+  active: z.boolean(),
+  ownerAddress: z.string().optional(),
+});
 
 export const updateNftSchema = z.object({
   price: z.string().optional(),
@@ -30,15 +35,11 @@ export const updateNftSchema = z.object({
   active: z.boolean().optional(),
   id: z.string().optional(),
 });
-// export const purchaseXoltNFTSchema = z.object({
-//   nft_id: z.string(),
-//   store_id: z.string(),
-//   nft_owner: z.string().optional(),
-//   buyer_address: z.string().optional(),
-//   price: z.string(),
-//   status: z.boolean().optional(),
-//   tokenId: z.string(),
-// });
+export const buyNftSchema = z.object({
+  tokenId: z.string(),
+  ownerAddress: z.string(),
+  active: z.boolean().optional(),
+});
 
 export const getNftSchema = z.object({});
 
