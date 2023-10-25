@@ -16,8 +16,11 @@ const NftDetailPage = () => {
   // const [openLoader, setOpenLoader] = useState(true);
 
   const router = useRouter();
+  const { id } = router.query;
 
-  const { data: myNft } = api.nft.getSingleNft.useQuery({ id: router.query });
+  if (id) {
+    const { data: myNft } = api.nft.getSingleNft.useQuery({ id: id });
+  }
 
   return (
     <>
