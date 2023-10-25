@@ -6,7 +6,7 @@ import dynamic from "next/dynamic";
 //   });
 
 const NftCardContainer = dynamic(
-  () => import("../components/layout/nftCardContainer"),
+  () => import("../components/layout/NftCardContainer"),
   {
     ssr: false,
   },

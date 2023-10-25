@@ -9,6 +9,7 @@ import {
   updateNftSchema,
   buyNftSchema,
   ListNFTSchema,
+  getSingleNftSchema,
 } from "../../../schema/nft";
 
 export const nftRouter = createTRPCRouter({
@@ -80,6 +81,25 @@ export const nftRouter = createTRPCRouter({
       });
     }
   }),
+
+  getSingleNft: publicProcedure
+    .input(getSingleNftSchema)
+    .query(async ({ ctx, input }) => {
+      try {
+        const response = await ctx.db.nft.findUnique({
+          where: {
+            id: input.id,
+          },
+        });
+        return response;
+      } catch (error: any) {
+        console.log("data error", error);
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: error?.message,
+        });
+      }
+    }),
   getOwnersNfts: publicProcedure
     .input(getUserNftSchema)
     .query(async ({ ctx, input }) => {

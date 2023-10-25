@@ -24,13 +24,19 @@ import { useAccount } from "wagmi";
 import { ZeroDevWeb3Auth } from "@zerodev/web3auth";
 
 type User = {
-  balance: number;
-  created_at: string;
-  email_address: string;
-  full_name: string;
-  id: string;
-  updated_at: string;
-  wallet_address: string;
+  aggregateVerifier?: string | undefined;
+  appState?: string | undefined;
+  dappShare?: string | undefined;
+  email: string | undefined;
+  idToken: string | undefined;
+  isMfaEnabled: boolean | undefined;
+  name: string | undefined;
+  oAuthAccessToken: string | undefined;
+  oAuthIdToken: string | undefined;
+  profileImage: string | undefined;
+  typeOfLogin: string | undefined;
+  verifier: string | undefined;
+  verifierId: string | undefined;
 };
 
 function Navbar() {
@@ -40,9 +46,9 @@ function Navbar() {
   const [walletAddress, setWalletAddress] = useState("");
   const [name, setName] = useState<String>("");
   const [email, setEmail] = useState<String>("");
-  const [user, setUser] = useState<User>();
+  const [user, setUser] = useState<OpenloginUserInfo>();
   const router = useRouter();
-  const { isConnected, address } = useAccount();
+  const { isConnected, address, isDisconnected } = useAccount();
   // let user: User = JSON.parse(localStorage.getItem("user") ?? "");
   // let user: User;
   // useEffect(() => {
@@ -52,6 +58,36 @@ function Navbar() {
   //   router.push("/login");
   // }
   // });
+
+  ///////////////////////////   /////////////////////////////////
+  //////////////////////  USER INFO  ////////////////////////////
+  ///////////////////////////   /////////////////////////////////
+
+  // useEffect(() => {
+  //   if (isConnected) {
+  //     const zeroDevWeb3Auth = ZeroDevWeb3Auth.getInstance([
+  //       process.env.REACT_APP_ZERODEV_PROJECT_ID ||
+  //         "aec66fa3-9e4f-4d6a-a5a8-7172d367b286",
+  //     ]);
+  //     zeroDevWeb3Auth.getUserInfo().then((res) => {
+  //       setUser(res);
+  //       console.log("res", res);
+  //     });
+  //     // setUser(zeroDevWeb3Auth.getUserInfo().then());
+  //   }
+  // }, [isConnected]);
+
+  // let zeroDevWeb3Auth;
+  // useEffect(() => {
+  //   zeroDevWeb3Auth = new ZeroDevWeb3Auth([
+  //     "aec66fa3-9e4f-4d6a-a5a8-7172d367b286",
+  //   ]);
+  //   // console.log("user info", zeroDevWeb3Auth.getUserInfo());
+  //   if (isConnected) {
+  //     let zero = zeroDevWeb3Auth.getUserInfo();
+  //     console.log(zero);
+  //   }
+  // }, [isConnected]);
 
   // let user: User;
   // const zeroDevWeb3Auth = new ZeroDevWeb3Auth([
@@ -75,24 +111,22 @@ function Navbar() {
 
   useEffect(() => {
     console.log("Hello");
-    const storedUser = localStorage.getItem("user");
-    if (storedUser && storedUser !== null) {
-      setUser(JSON.parse(storedUser));
+    if (isConnected) {
       console.log("userr", user);
       if (user) {
         console.log("user", user);
-        setName(user.full_name);
-        setEmail(user.email_address);
-        wallet_address = user.wallet_address;
-        setWalletAddress(wallet_address);
+        setName(user?.name);
+        setEmail(user.email);
+        // wallet_address = user.wallet_address;
+        setWalletAddress("");
         console.log("name", name);
         console.log("email", email);
         console.log("addr", wallet_address);
         setData(true);
       }
-      if (!user) {
-        router.push("/login");
-      }
+    }
+    if (isDisconnected) {
+      setData(false);
     }
   }, [pageOpen]);
 

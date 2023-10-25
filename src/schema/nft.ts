@@ -43,6 +43,10 @@ export const buyNftSchema = z.object({
 
 export const getNftSchema = z.object({});
 
+export const getSingleNftSchema = z.object({
+  id: z.string(),
+});
+
 export const getUserNftSchema = z.object({
   ownerAddress: z.string(),
 });

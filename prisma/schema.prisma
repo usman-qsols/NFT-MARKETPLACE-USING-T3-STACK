@@ -42,9 +42,7 @@ model Nft {
     ipfsHash     String?
     description  String?
     tokenId      String?
-    // contractAddress String?
     ownerAddress String?
-    // sellerAddress String?
     created_at   DateTime @default(now())
     updated_at   DateTime @default(now()) @updatedAt
 

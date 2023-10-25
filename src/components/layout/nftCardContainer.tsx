@@ -1,13 +1,17 @@
 import React from "react";
-import NftCard from "./nftCard";
+import NftCard from "./NftCard";
 import auction1 from "../../utilities/auction-1.jpg";
 import { useEffect } from "react";
 import { useRouter } from "next/router";
 import { ZeroDevWeb3Auth } from "@zerodev/web3auth";
 import { useAccount } from "wagmi";
+import { api } from "~/utils/api";
 
 const nftCardContainer = () => {
   const { isConnected } = useAccount();
+
+  const { data } = api.nft.all.useQuery();
+  console.log("data", data);
 
   useEffect(() => {
     if (isConnected) {
@@ -40,30 +44,24 @@ const nftCardContainer = () => {
         </div>
 
         <ul className="grid-list">
-          <li>
-            <NftCard src={auction1} />
-          </li>
-          <li>
-            <NftCard src={auction1} />
-          </li>
-          <li>
-            <NftCard src={auction1} />
-          </li>
-          <li>
-            <NftCard src={auction1} />
-          </li>
-          <li>
-            <NftCard src={auction1} />
-          </li>
-          <li>
-            <NftCard src={auction1} />
-          </li>
-          <li>
-            <NftCard src={auction1} />
-          </li>
-          <li>
-            <NftCard src={auction1} />
-          </li>
+          {data?.map((e, i) => {
+            return (
+              <li key={i}>
+                <NftCard
+                  src={e.ipfsHash}
+                  title={e.title}
+                  ownerAddress={
+                    e.ownerAddress?.slice(0, 8) +
+                    "..." +
+                    e.ownerAddress?.slice(35, 45)
+                  }
+                  price={e.price}
+                  active={e.active}
+                  id={e.id}
+                />
+              </li>
+            );
+          })}
         </ul>
       </div>
     </section>

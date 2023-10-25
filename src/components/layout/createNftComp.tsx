@@ -1,6 +1,24 @@
 import React, { useState } from "react";
 import { uploadFileToIPFS, uploadJSONToIPFS } from "../../pinata";
 import { api } from "~/utils/api";
+import { useRouter } from "next/router";
+import {
+  useAccount,
+  usePrepareContractWrite,
+  useContractWrite,
+  useContractRead,
+  useNetwork,
+  useWaitForTransaction,
+} from "wagmi";
+import {
+  usePrepareContractBatchWrite,
+  useContractBatchWrite,
+} from "@zerodev/wagmi";
+import T3MarketJson from "../contractAddressAndJson/T3MarketplaceContract.json";
+import MyTokenJson from "../contractAddressAndJson/MyToken.json";
+import T3MarketAddress from "../contractAddressAndJson/T3MarketplaceContract-address.json";
+import MyTokenAddress from "../contractAddressAndJson/MyToken-address.json";
+import LoadingModal from "./loader";
 
 const createNftComp = () => {
   const [title, setTitle] = useState("");
@@ -17,10 +35,14 @@ const createNftComp = () => {
   const [disableButton, setDisableButton] = useState(true);
 
   const { mutateAsync, error } = api.nft.createNft.useMutation();
+  const router = useRouter();
 
   const active = true;
   const sellerAddress = "0xCDeD68e89f67d6262F82482C2710Ddd52492808a";
   const contractAddress = "0x43c99947D6E25497Dc69351FaBb3025F7ACC2A6b";
+
+  const { address, isConnected } = useAccount();
+  console.log("Add", address);
 
   const handleClick = () => {
     mutateAsync({
@@ -87,6 +109,120 @@ const createNftComp = () => {
     }
   }
 
+  const MarketAddress = T3MarketAddress.address;
+  console.log("t3", MarketAddress);
+
+  //////////////////////////////////////////////////////////////////
+  //////////////////////  Token ID  ////////////////////////////////
+  //////////////////////////////////////////////////////////////////
+
+  const {
+    data: tokenIdData,
+    isError,
+    isLoading,
+  } = useContractRead({
+    address: "0xB35610f89D0d8EC1aC3F2F3887475eB16A78BC35",
+    abi: T3MarketJson.abi,
+    functionName: "_tokenIds",
+  });
+
+  console.log("token Id", tokenIdData?.toString());
+  // setTokenId(tokenIdData.toString());
+  // console.log("token", tokenId);
+
+  //////////////////////////////////////////////////////////////////
+  ////////////////////// Listing Nft  //////////////////////////////
+  //////////////////////////////////////////////////////////////////
+  const { config: listConfig } = usePrepareContractWrite({
+    address: "0xB35610f89D0d8EC1aC3F2F3887475eB16A78BC35",
+    abi: T3MarketJson.abi,
+    functionName: "listNft",
+    args: [tokenIdData?.toString(), price],
+  });
+  const {
+    data: listData,
+    isLoading: listIsLoading,
+    isSuccess: listIsSuccess,
+    write: listMyNft,
+  } = useContractWrite(listConfig);
+
+  const {
+    data: listWaitData,
+    isError: listWaitError,
+    isSuccess: listTxIsSuccess,
+  } = useWaitForTransaction({
+    hash: listData?.hash,
+    onSuccess: () => {
+      router.push("/");
+    },
+  });
+
+  const listingSuccess = listTxIsSuccess;
+
+  //////////////////////////////////////////////////////////////////
+  //////////////////////  Minting Nft  /////////////////////////////
+  //////////////////////////////////////////////////////////////////
+
+  const { config: mintConfig } = usePrepareContractWrite({
+    address: "0xB35610f89D0d8EC1aC3F2F3887475eB16A78BC35",
+    abi: T3MarketJson.abi,
+    functionName: "safeMint",
+    args: [address, ipfsUrl],
+  });
+  const {
+    data: mintData,
+    write: safeMintNft,
+    isSuccess: ismintStarted,
+    isLoading: isMintLoading,
+  } = useContractWrite(mintConfig);
+
+  const {
+    data: waitData,
+    isError: waitError,
+    isSuccess: txIsSuccess,
+  } = useWaitForTransaction({
+    hash: mintData?.hash,
+    onSuccess: async () => {
+      if (listMyNft) {
+        listMyNft();
+      }
+    },
+  });
+
+  // const isMintSuccess = txIsSuccess;
+  // if (isMintSuccess) {
+  //   router.push("/");
+  // }
+
+  async function mintNft(e: any) {
+    e.preventDefault();
+    console.log("Ipfs url--> ", ipfsUrl);
+
+    try {
+      if (safeMintNft) {
+        safeMintNft();
+        console.log("hash", mintData?.hash);
+        // setTokenId(tokenIdData.toString());
+      }
+      if (waitError) {
+        alert(waitError);
+      }
+      // console.log(tokenId);
+
+      mutateAsync({
+        title: title,
+        price: price,
+        description: description,
+        ipfsHash: ipfsUrl,
+        ownerAddress: address.toString(),
+        tokenId: tokenIdData.toString(),
+        active: true,
+      });
+    } catch (error) {
+      alert(error);
+    }
+  }
+
   return (
     <div className="container">
       <p className="section-subtitle mt-20">How It Works</p>
@@ -142,12 +278,21 @@ const createNftComp = () => {
             } `}
             aria-label="Submit"
             disabled={disableButton ? true : false}
-            onClick={handleClick}
+            onClick={mintNft}
           >
             Submit
           </button>
         </form>
       </div>
+
+      {isMintLoading ? (
+        <LoadingModal h2="Minting, Please be patient" />
+      ) : listIsLoading ? (
+        <LoadingModal h2="Listing, Please be patient" />
+      ) : (
+        ""
+      )}
+      {/* {listIsLoading ? <LoadingModal h2="Listing, Please be patient" /> : ""} */}
     </div>
   );
 };
