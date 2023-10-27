@@ -42,31 +42,6 @@ export default function Home() {
     setPageOpen(true);
     console.log("hhehehhe");
   });
-  // useEffect(() => {
-  //   console.log("Hello");
-  //   const storedUser: any = localStorage.getItem("user");
-  //   setUser(JSON.parse(storedUser));
-  //   console.log("userr", user);
-
-  //   if (!user) {
-  //     router.push("/login");
-  //   }
-  // }, [pageOpen]);
-
-  // useEffect(() => {
-  //   let user = localStorage.getItem("user");
-  // if (!user) {
-  //   router.push("/login");
-  // }
-  // });
-
-  const clicked = () => {
-    mutateAsync({
-      wallet_address: "0x00012313123123",
-      full_name: "Usman rahim",
-      email_address: "urkrr@kasdask.com",
-    });
-  };
 
   return (
     <>

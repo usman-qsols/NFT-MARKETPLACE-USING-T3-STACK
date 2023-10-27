@@ -7,9 +7,9 @@ const stripe = new Stripe(key, {
   apiVersion: "2023-10-16",
 });
 
-export async function POST(request: NextRequest) {
+export default async function POST(request: NextRequest) {
   const body = await request.json();
-  console.log(body);
+  console.log("body", body);
   try {
     if (body.length > 0) {
       const session = await stripe.checkout.sessions.create({
@@ -18,8 +18,8 @@ export async function POST(request: NextRequest) {
         payment_method_types: ["card"],
         billing_address_collection: "auto",
         shipping_options: [
-          { shipping_rate: "shr_1O5RhVIdcf8l1iwJmudwExi0" },
-          { shipping_rate: "shr_1O5RgzIdcf8l1iwJydkuNMI7" },
+          { shipping_rate: "shr_1NJgGfFFOcRRviB5IKHisAI1" },
+          { shipping_rate: "shr_1NJgFzFFOcRRviB5RNlrrnhM" },
         ],
         invoice_creation: {
           enabled: true,
@@ -27,7 +27,7 @@ export async function POST(request: NextRequest) {
         line_items: body.map((item: any) => {
           return {
             price_data: {
-              currency: "usd",
+              currency: "pkr",
               product_data: {
                 name: item.name,
               },
