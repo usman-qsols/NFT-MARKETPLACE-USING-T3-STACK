@@ -50,11 +50,7 @@ const nftCardContainer = () => {
                 <NftCard
                   src={e.ipfsHash}
                   title={e.title}
-                  ownerAddress={
-                    e.ownerAddress?.slice(0, 8) +
-                    "..." +
-                    e.ownerAddress?.slice(35, 45)
-                  }
+                  ownerAddress={e.ownerAddress}
                   price={e.price}
                   active={e.active}
                   id={e.id}

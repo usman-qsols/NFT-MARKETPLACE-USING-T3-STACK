@@ -2,10 +2,12 @@ import React, { useState } from "react";
 import Image from "next/image";
 import { useRouter } from "next/router";
 import Link from "next/link";
+import { useAccount } from "wagmi";
 
 const NftCard = (props: any) => {
   const [active, setActive] = useState(true);
   const router = useRouter();
+  const { address } = useAccount();
 
   const pushToDetailPage = () => {
     // router.push();
@@ -37,7 +39,12 @@ const NftCard = (props: any) => {
       </h3>
 
       <span className="card-author">
-        Owned By <a className="author-link">{props.ownerAddress}</a>
+        Owned By{" "}
+        <a className="author-link">
+          {props.ownerAddress?.slice(0, 8) +
+            "..." +
+            props.ownerAddress?.slice(35, 45)}
+        </a>
       </span>
 
       <div className="wrapper">
@@ -50,10 +57,15 @@ const NftCard = (props: any) => {
 
       {props.active ? (
         <div className="flex flex-row justify-between">
-          <button className="btn">
-            <span>Buy Nft</span>
-          </button>
-          <Link href={`${props.id}`}>
+          {address !== props.ownerAddress ? (
+            <button className="btn">
+              <span>Buy Nft</span>
+            </button>
+          ) : (
+            ""
+          )}
+
+          <Link href={`/NftDetail/${props.id}`}>
             <button className="btn" onClick={pushToDetailPage}>
               <span>Details</span>
             </button>

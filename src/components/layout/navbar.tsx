@@ -22,6 +22,7 @@ import {
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { useAccount } from "wagmi";
 import { ZeroDevWeb3Auth } from "@zerodev/web3auth";
+import Link from "next/link";
 
 type User = {
   aggregateVerifier?: string | undefined;
@@ -202,7 +203,7 @@ function Navbar() {
         <div className="text-sm lg:flex-grow">
           <a
             // href="/exploreNfts"
-            className={`text-white-200 mr-8 mt-4 block text-[1.6rem] font-bold hover:text-purple-600 active:text-red-500 lg:mt-0 lg:inline-block`}
+            className={`text-white-200 mr-8 mt-4 block cursor-pointer text-[1.6rem] font-bold hover:text-purple-600 active:text-red-500 lg:mt-0 lg:inline-block`}
             onClick={() => router.push("/exploreNfts")}
           >
             Explore Nfts
@@ -214,6 +215,12 @@ function Navbar() {
           >
             Create Nft
           </a>
+          <Link
+            href={`/OwnerNfts/ownerAddress`}
+            className="text-white-200 mr-8 mt-4 block cursor-pointer text-[1.6rem] font-bold hover:text-purple-600 active:text-red-500 lg:mt-0 lg:inline-block"
+          >
+            My Nfts
+          </Link>
           {data ? (
             <a
               // href=""

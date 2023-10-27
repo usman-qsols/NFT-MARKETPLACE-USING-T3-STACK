@@ -2,6 +2,7 @@ import { ConnectButton } from "@rainbow-me/rainbowkit";
 import Router, { useRouter } from "next/router";
 import { api } from "~/utils/api";
 import { useAccount } from "wagmi";
+import StripeCheckOutButton from "../stripeComponents/checkout";
 export default function Hero(props: any) {
   const router = useRouter();
   const { isConnected } = useAccount();
@@ -37,6 +38,7 @@ export default function Hero(props: any) {
             <button className="btn" onClick={handleCreate}>
               <span>{props.create}</span>
             </button>
+            <StripeCheckOutButton />
           </div>
         </div>
 
