@@ -29,7 +29,8 @@
     "**/*.tsx",
     "**/*.cjs",
     "**/*.mjs",
-    ".next/types/**/*.ts"
+    ".next/types/**/*.ts",
+    "src/pages/api/update_nft_api"
   ],
   "exclude": ["node_modules"]
 }

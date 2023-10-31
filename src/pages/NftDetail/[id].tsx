@@ -2,6 +2,15 @@ import React, { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import { api } from "~/utils/api";
 import { useAccount } from "wagmi";
+import axios from "axios";
+import getStipePromise from "../../components/lib/stripe";
+import { useSelector, useDispatch } from "react-redux";
+import { Stripe, loadStripe } from "@stripe/stripe-js";
+import { setUpdateNftData } from "~/redux/features/BuyNftSlicer";
+let stripePromise: Promise<Stripe | null> = loadStripe(
+  process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY ??
+    "pk_test_51O3IVKIdcf8l1iwJyfBoPIDsYS1uBVV9mYdwCGqurdSxg0deL02H6LUO8GZi9U1z3GLGb1GWw7db6BMidD9BAnQ700V5my261i",
+);
 
 type Data = {
   id: string;
@@ -18,28 +27,53 @@ type Data = {
 
 const NftDetailPage = () => {
   const [data, setData] = useState<Data | null>();
-  const [ownerAddress, setOwnerAddress] = useState<string>("");
-  const [contractAddress, setContractAddress] = useState();
-  const [tokenId, setTokenId] = useState();
-  const [price, setPrice] = useState("");
-  const [description, setDescription] = useState();
-  const [ipfsHash, setIpfsHash] = useState();
-  const [approvedModal, setApprovedModal] = useState(false);
-  const [openInputModal, setOpenInputModal] = useState(false);
-  const [smartAccount, setSmartAccount] = useState({});
   // const [openLoader, setOpenLoader] = useState(true);
 
   const router = useRouter();
   const { address, isConnected } = useAccount();
   const { id } = router.query;
+  const Id: any = id;
+  const dispatch = useDispatch();
 
-  const { data: myNft } = api.nft.getSingleNft.useQuery({ id: id });
+  const { data: myNft } = api.nft.getSingleNft.useQuery({ id: Id });
   // setOwnerAddress(myNft?.ownerAddress);
 
   useEffect(() => {
     setData(myNft);
     console.log("data", data);
   }, [myNft]);
+
+  const products = [
+    {
+      product: 1,
+      name: data?.title,
+      price: data?.price,
+      quantity: 1,
+      // productId: data?.id,
+      // ownerAddress: data?.ownerAddress,
+    },
+  ];
+
+  const handleCheckout = async () => {
+    const stripe = await stripePromise;
+    dispatch(
+      setUpdateNftData({ ownerAddress: data?.ownerAddress, p_id: data?.id }),
+    );
+
+    const checkoutSession = await axios.post("/api/create-checkout-session", {
+      items: products,
+      email: "usamnrahim2000@gmail.com",
+      p_id: data?.id,
+      ownerAddress: address,
+    });
+
+    //Redirect user to checkout page
+    const result = await stripe?.redirectToCheckout({
+      sessionId: checkoutSession.data.id,
+    });
+
+    if (result?.error) alert(`Error: ${result?.error.message}`);
+  };
 
   return (
     <>
@@ -49,7 +83,7 @@ const NftDetailPage = () => {
             <img
               alt="ecommerce"
               className="w-full rounded border border-gray-200 object-cover object-center lg:w-1/2"
-              src={data?.ipfsHash}
+              src={data?.ipfsHash ?? ""}
             />
             <div className="mt-6 w-full lg:mt-0 lg:w-1/2 lg:py-6 lg:pl-10">
               <h1 className="title-font mb-1 text-3xl font-medium text-sky-400">
@@ -71,16 +105,16 @@ const NftDetailPage = () => {
               </p>
 
               <div className="flex">
-                {address === data?.ownerAddress || !data?.active ? (
-                  ""
-                ) : (
-                  <button
-                    className="ml-auto flex rounded border-0 bg-sky-600 px-6 py-2 text-white hover:bg-sky-800 focus:outline-none"
-                    // onClick={"buyNft"}
-                  >
-                    Buy Nft
-                  </button>
-                )}
+                {address === data?.ownerAddress || !data?.active
+                  ? ""
+                  : isConnected && (
+                      <button
+                        className="ml-auto flex rounded border-0 bg-sky-600 px-6 py-2 text-white hover:bg-sky-800 focus:outline-none"
+                        onClick={handleCheckout}
+                      >
+                        Buy Nft
+                      </button>
+                    )}
 
                 {!data?.active && address === data?.ownerAddress ? (
                   <button

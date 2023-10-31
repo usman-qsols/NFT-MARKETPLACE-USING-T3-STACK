@@ -1,9 +1,11 @@
 import { configureStore } from "@reduxjs/toolkit";
 import web3SmartAccount from "./features/SmartAccountSlicer";
+import UpdateNftData from "./features/BuyNftSlicer";
 
 export const store = configureStore({
   reducer: {
     web3SmartAccount: web3SmartAccount,
+    UpdateNftData: UpdateNftData,
   },
 });
 

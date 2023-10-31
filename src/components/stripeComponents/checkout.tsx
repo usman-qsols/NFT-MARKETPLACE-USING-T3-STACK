@@ -29,23 +29,6 @@ const products = [
 ];
 
 const StripeCheckOutButton = () => {
-  // const handleCheckout = async () => {
-  //   const stripe = await getStipePromise();
-  //   const response = await fetch(
-  //     "/api/stripe-session/create-checkout-session",
-  //     {
-  //       method: "POST",
-  //       headers: { "Content-Type": "application/json" },
-  //       cache: "no-cache",
-  //       // body: JSON.stringify(products),
-  //     },
-  //   );
-
-  //   const data = await response.json();
-  //   if (data.session) {
-  //     stripe?.redirectToCheckout({ sessionId: data.session.id });
-  //   }
-  // };
 
   const handleCheckout = async () => {
     const stripe = await stripePromise;

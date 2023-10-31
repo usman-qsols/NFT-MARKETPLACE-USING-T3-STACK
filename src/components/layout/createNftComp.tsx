@@ -25,13 +25,9 @@ const createNftComp = () => {
   const [price, setPrice] = useState("");
   const [description, setDescription] = useState<string>("");
   const [ipfsUrl, setIpfsUrl] = useState<string>("");
-  const [ownerAddress, setOwnerAddress] = useState(); // wallet address
   const [fileURL, setFileURL] = useState();
   const [message, updateMessage] = useState("");
-  const [tokenId, setTokenId] = useState(null);
-  const [tokenIdForListing, setTokenIdForListing] = useState(null);
-  const [openListingModal, setOpenListingModal] = useState(false);
-  const [openAnimation, setOpenAnimation] = useState(false);
+
   const [disableButton, setDisableButton] = useState(true);
 
   const { mutateAsync, error } = api.nft.createNft.useMutation();

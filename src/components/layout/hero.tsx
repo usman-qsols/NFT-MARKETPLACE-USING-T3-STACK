@@ -38,7 +38,7 @@ export default function Hero(props: any) {
             <button className="btn" onClick={handleCreate}>
               <span>{props.create}</span>
             </button>
-            <StripeCheckOutButton />
+            {/* <StripeCheckOutButton /> */}
           </div>
         </div>
 
