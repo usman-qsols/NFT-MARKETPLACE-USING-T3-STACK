@@ -3,6 +3,7 @@ import Router, { useRouter } from "next/router";
 import { api } from "~/utils/api";
 import { useAccount } from "wagmi";
 import StripeCheckOutButton from "../stripeComponents/checkout";
+import Link from "next/link";
 export default function Hero(props: any) {
   const router = useRouter();
   const { isConnected } = useAccount();
@@ -27,13 +28,17 @@ export default function Hero(props: any) {
           </h2>
 
           <p className="hero-text">
-            Explore on the world's best & largest NFT marketplace
+            Explore on the world's best & largest NFT marketplace. You can also
+            buy Tokens if you want to buy Nfts on our marketplace. Just to click
+            on Buy Tokens button below.
           </p>
 
           <div className="btn-group">
-            {/* <button className={`btn ${props.hidden}`} onClick={props.onclick}>
-              <span>{props.loginlogoutbtn}</span>
-            </button> */}
+            <Link href={"/BuyTokens"}>
+              <button className="btn">
+                <span>Buy Tokens</span>
+              </button>
+            </Link>
 
             <button className="btn" onClick={handleCreate}>
               <span>{props.create}</span>

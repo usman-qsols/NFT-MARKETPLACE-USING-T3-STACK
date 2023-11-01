@@ -30,7 +30,8 @@
     "**/*.cjs",
     "**/*.mjs",
     ".next/types/**/*.ts",
-    "src/pages/api/update_nft_api"
+    "src/pages/api/update_nft_api",
+    "src/pages/BuyTokens"
   ],
   "exclude": ["node_modules"]
 }

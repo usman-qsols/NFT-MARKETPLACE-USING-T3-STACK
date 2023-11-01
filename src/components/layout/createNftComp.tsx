@@ -27,7 +27,7 @@ const createNftComp = () => {
   const [ipfsUrl, setIpfsUrl] = useState<string>("");
   const [fileURL, setFileURL] = useState();
   const [message, updateMessage] = useState("");
-
+  const [listingModalOpen, setListingModalOpen] = useState(false);
   const [disableButton, setDisableButton] = useState(true);
 
   const { mutateAsync, error } = api.nft.createNft.useMutation();
@@ -179,11 +179,40 @@ const createNftComp = () => {
   } = useWaitForTransaction({
     hash: mintData?.hash,
     onSuccess: async () => {
-      if (listMyNft) {
-        listMyNft();
-      }
+      // if (listMyNft) {
+      //   listMyNft();
+      // }
+      setListingModalOpen(true);
     },
   });
+
+  async function listingNft(e: any) {
+    e.preventDefault();
+    try {
+      if (listMyNft) {
+        listMyNft();
+        console.log("hash", listData?.hash);
+        // setTokenId(tokenIdData.toString());
+        setListingModalOpen(false);
+      }
+      if (listWaitError) {
+        alert(listWaitError);
+      }
+      // console.log(tokenId);
+
+      mutateAsync({
+        title: title,
+        price: price,
+        description: description,
+        ipfsHash: ipfsUrl,
+        ownerAddress: address.toString(),
+        tokenId: tokenIdData.toString(),
+        active: true,
+      });
+    } catch (error) {
+      alert(error);
+    }
+  }
 
   // const isMintSuccess = txIsSuccess;
   // if (isMintSuccess) {
@@ -205,15 +234,15 @@ const createNftComp = () => {
       }
       // console.log(tokenId);
 
-      mutateAsync({
-        title: title,
-        price: price,
-        description: description,
-        ipfsHash: ipfsUrl,
-        ownerAddress: address.toString(),
-        tokenId: tokenIdData.toString(),
-        active: true,
-      });
+      // mutateAsync({
+      //   title: title,
+      //   price: price,
+      //   description: description,
+      //   ipfsHash: ipfsUrl,
+      //   ownerAddress: address.toString(),
+      //   tokenId: tokenIdData.toString(),
+      //   active: true,
+      // });
     } catch (error) {
       alert(error);
     }
@@ -281,14 +310,27 @@ const createNftComp = () => {
         </form>
       </div>
 
-      {isMintLoading ? (
-        <LoadingModal h2="Minting, Please be patient" />
-      ) : listIsLoading ? (
-        <LoadingModal h2="Listing, Please be patient" />
+      {isMintLoading ? <LoadingModal h2="Minting, Please be patient" /> : ""}
+      {listIsLoading ? <LoadingModal h2="Listing, Please be patient" /> : ""}
+      {listingModalOpen ? (
+        <div className="fixed left-0 top-0 flex h-full w-full items-center justify-center bg-black bg-opacity-50 p-[10px] py-10">
+          <div className="max-h-[300px] w-[300px] max-w-xl overflow-y-auto bg-white p-[10px] sm:rounded-2xl">
+            <div className="w-full">
+              <div className="m-8 mx-auto my-20 flex max-w-[400px] flex-col items-center justify-center">
+                <h1 className="font-bold">
+                  By clicking on the below button, your Nft will be listed on
+                  our marketplace
+                </h1>
+                <button className="btn_list" onClick={listingNft}>
+                  List Your Nft
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
       ) : (
         ""
       )}
-      {/* {listIsLoading ? <LoadingModal h2="Listing, Please be patient" /> : ""} */}
     </div>
   );
 };

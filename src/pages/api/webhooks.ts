@@ -1,6 +1,8 @@
 import { stripZeros } from "ethers/lib/utils";
 import { buffer } from "micro";
 import { api } from "~/utils/api";
+import { transferTokens } from "~/server/web3/transferToken";
+import test from "../test";
 
 // Creating Connection with stripe
 
@@ -8,41 +10,64 @@ const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 const endPointSecret = process.env.STRIPE_SIGNING_SECRET;
 
 const fulfillOrder = async (session: any) => {
-  // const updateBuyNft = api.nft.buyNft.useMutation({
-  //   onSuccess: (res: any) => {
-  //     console.log("Nft updated successfully");
-  //   },
-  //   onError(error: any) {
-  //     console.log("Error updating menu", error);
-  //   },
-  // });
   console.log("Fulfilling the order", session);
   console.log("metadata", session.metadata);
   // // Transfer function here
 
   console.log("consoling");
 
-  let data = {
-    id: session.metadata.p_id,
-    ownerAddress: session.metadata.ownerAddress,
-  };
+  // let data = {
+  //   id: session.metadata.p_id,
+  //   ownerAddress: session.metadata.ownerAddress,
+  // };
 
   // const obj = {
   //   id: "6538d153abf1d7ae17cedf80",
   //   ownerAddress: "absbsbsbbsbsasjdalksjdakskdpaskdpoak",
   // };
-  const response = await fetch(
-    `
-      ${process.env.NEXT_PUBLIC_BASE_URL}update_nft`,
-    {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(data),
-    },
+  // const response = await fetch(
+  //   `
+  //     ${process.env.NEXT_PUBLIC_BASE_URL}update_nft`,
+  //   {
+  //     method: "POST",
+  //     headers: {
+  //       "Content-Type": "application/json",
+  //     },
+  //     body: JSON.stringify(data),
+  //   },
+  // );
+  // console.log({ response }, "response");
+  const BuyToken = async (fromAddress: any, toAddress: any, amount: any) => {
+    try {
+      let bal = await transferTokens({
+        fromAddress: fromAddress,
+        toAddress: toAddress,
+        amount: amount,
+      });
+      // You can process the balance here as needed
+      console.log(bal);
+      return true;
+    } catch (err) {
+      console.error(err);
+      return false;
+    }
+  };
+
+  await BuyToken(
+    "0xaF8e6625Cc7d5177Df30b88c1bcEFC2D0C1F12AD",
+    session.metadata.ownerAddress,
+    Number(session.metadata.price) * 1000000,
   );
-  console.log({ response }, "response");
+  // return BuyToken(
+  //   "0xaF8e6625Cc7d5177Df30b88c1bcEFC2D0C1F12AD",
+  //   session.metadata.oldOwnerAddress,
+  //   Number(session.metadata.price) * 1000000,
+  // );
+
+  // let buyData = {
+  //   tokenId: session.metadata.tokenId,
+  //   amount: session.metadata.amount,
+  // };
   return console.log("Completed");
 };
 

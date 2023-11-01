@@ -143,4 +143,29 @@ export const nftRouter = createTRPCRouter({
         });
       }
     }),
+
+  updateNft: publicProcedure
+    .input(updateNftSchema)
+    .mutation(async ({ ctx, input }) => {
+      try {
+        console.log(input, "input");
+        let option: any = {};
+        option.where = {
+          id: input.id,
+        };
+        option.data = {
+          active: input.active,
+          price: input.price,
+        };
+        const updateResponse = await ctx.db?.nft?.update(option);
+        console.log(updateResponse, "updateResponse");
+        return updateResponse;
+      } catch (e) {
+        console.log(e, "errorworking");
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Something went wrong",
+        });
+      }
+    }),
 });

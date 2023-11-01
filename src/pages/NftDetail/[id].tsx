@@ -1,12 +1,22 @@
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import { api } from "~/utils/api";
-import { useAccount } from "wagmi";
 import axios from "axios";
 import getStipePromise from "../../components/lib/stripe";
+import {
+  usePrepareContractWrite,
+  useContractWrite,
+  useWaitForTransaction,
+  useAccount,
+} from "wagmi";
 import { useSelector, useDispatch } from "react-redux";
 import { Stripe, loadStripe } from "@stripe/stripe-js";
 import { setUpdateNftData } from "~/redux/features/BuyNftSlicer";
+import T3MarketJson from "../../components/contractAddressAndJson/T3MarketplaceContract.json";
+import MyTokenJson from "../../components/contractAddressAndJson/MyToken.json";
+import T3MarketAddress from "../../components/contractAddressAndJson/T3MarketplaceContract-address.json";
+import MyTokenAddress from "../../components/contractAddressAndJson/MyToken-address.json";
+import LoadingModal from "../../components/layout/loader";
 let stripePromise: Promise<Stripe | null> = loadStripe(
   process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY ??
     "pk_test_51O3IVKIdcf8l1iwJyfBoPIDsYS1uBVV9mYdwCGqurdSxg0deL02H6LUO8GZi9U1z3GLGb1GWw7db6BMidD9BAnQ700V5my261i",
@@ -27,6 +37,8 @@ type Data = {
 
 const NftDetailPage = () => {
   const [data, setData] = useState<Data | null>();
+  const [openInputModal, setOpenInputModal] = useState(false);
+  const [price, setPrice] = useState("");
   // const [openLoader, setOpenLoader] = useState(true);
 
   const router = useRouter();
@@ -36,11 +48,16 @@ const NftDetailPage = () => {
   const dispatch = useDispatch();
 
   const { data: myNft } = api.nft.getSingleNft.useQuery({ id: Id });
+  const updateNftData = api.nft.updateNft.useMutation();
+  const updateBuyNft = api.nft.buyNft.useMutation();
+  // let newOwnerAddress1;
   // setOwnerAddress(myNft?.ownerAddress);
 
   useEffect(() => {
     setData(myNft);
     console.log("data", data);
+    // newOwnerAddress1 = address;
+    console.log("address", address);
   }, [myNft]);
 
   const products = [
@@ -65,6 +82,10 @@ const NftDetailPage = () => {
       email: "usamnrahim2000@gmail.com",
       p_id: data?.id,
       ownerAddress: address,
+      oldOwnerAddress: data?.ownerAddress,
+      price: data?.price,
+      tokenId: data?.tokenId,
+      amount: data?.price,
     });
 
     //Redirect user to checkout page
@@ -74,6 +95,114 @@ const NftDetailPage = () => {
 
     if (result?.error) alert(`Error: ${result?.error.message}`);
   };
+
+  //////////////////////////////////////////////////////////////////
+  ////////////////////// Listing Nft  //////////////////////////////
+  //////////////////////////////////////////////////////////////////
+  const { config: listConfig } = usePrepareContractWrite({
+    address: "0xB35610f89D0d8EC1aC3F2F3887475eB16A78BC35",
+    abi: T3MarketJson.abi,
+    functionName: "listNft",
+    args: [data?.tokenId, price],
+  });
+  const {
+    data: listData,
+    isLoading: listIsLoading,
+    isSuccess: listIsSuccess,
+    write: listMyNft,
+  } = useContractWrite(listConfig);
+
+  const {
+    data: listWaitData,
+    isError: listWaitError,
+    isSuccess: listTxIsSuccess,
+  } = useWaitForTransaction({
+    hash: listData?.hash,
+    onSuccess: () => {
+      router.push("/");
+    },
+  });
+
+  const listingSuccess = listTxIsSuccess;
+
+  async function listingNft(e: any) {
+    e.preventDefault();
+    try {
+      if (listMyNft) {
+        listMyNft();
+        console.log("hash", listData?.hash);
+        // setTokenId(tokenIdData.toString());
+        // setListingModalOpen(false);
+      }
+      if (listWaitError) {
+        alert(listWaitError);
+      }
+      // console.log(tokenId);
+
+      updateNftData.mutateAsync({
+        price: price,
+        active: true,
+      });
+    } catch (error) {
+      alert(error);
+    }
+  }
+
+  //////////////////////////////////////////////////////////
+  /////////////////// Buying Nft ///////////////////////////
+  //////////////////////////////////////////////////////////
+
+  const { config: buyConfig } = usePrepareContractWrite({
+    address: "0xB35610f89D0d8EC1aC3F2F3887475eB16A78BC35",
+    abi: T3MarketJson.abi,
+    functionName: "buy",
+    args: [data?.tokenId, data?.price],
+  });
+  const {
+    data: buyData,
+    isLoading: buyIsLoading,
+    isSuccess: buyIsSuccess,
+    write: buyNft,
+  } = useContractWrite(buyConfig);
+
+  const {
+    data: buyWaitData,
+    isError: buyWaitError,
+    isSuccess: buyTxIsSuccess,
+  } = useWaitForTransaction({
+    hash: buyData?.hash,
+    onSuccess: () => {
+      updateBuyNft.mutateAsync({
+        id: data?.id,
+        active: false,
+      });
+
+      router.push("/");
+    },
+  });
+
+  const buyingSuccess = buyTxIsSuccess;
+
+  async function buyingNft(e: any) {
+    e.preventDefault();
+    console.log("helloo");
+
+    if (buyNft) {
+      buyNft();
+      console.log("hash", buyData?.hash);
+      // setTokenId(tokenIdData.toString());
+      // setListingModalOpen(false);
+    }
+    if (buyWaitError) {
+      alert(buyWaitError);
+    }
+    // console.log(tokenId);
+
+    // updateBuyNft.mutateAsync({
+    //   id: data?.id,
+    //   active: false,
+    // });
+  }
 
   return (
     <>
@@ -110,16 +239,16 @@ const NftDetailPage = () => {
                   : isConnected && (
                       <button
                         className="ml-auto flex rounded border-0 bg-sky-600 px-6 py-2 text-white hover:bg-sky-800 focus:outline-none"
-                        onClick={handleCheckout}
+                        onClick={(e: any) => buyingNft(e)}
                       >
-                        Buy Nft
+                        {buyIsSuccess ? "Please Wait..." : "Buy Nft"}
                       </button>
                     )}
 
                 {!data?.active && address === data?.ownerAddress ? (
                   <button
                     className="ml-auto flex rounded border-0 bg-red-500 px-6 py-2 text-white hover:bg-red-600 focus:outline-none"
-                    // onClick={() => setApprovedModal(!approvedModal)}
+                    onClick={() => setOpenInputModal(!openInputModal)}
                   >
                     Re-sell
                   </button>
@@ -131,7 +260,7 @@ const NftDetailPage = () => {
           </div>
           {/* {openLoader && <LoadingModal />} */}
         </div>
-        {/* {openInputModal && (
+        {openInputModal && (
           <div className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto overflow-x-hidden outline-none focus:outline-none">
             <div className="flex shadow-md">
               <div className="flex h-[24rem] w-[24rem] flex-wrap content-center justify-center rounded-l-md border border-dashed border-red-500 bg-white">
@@ -157,13 +286,13 @@ const NftDetailPage = () => {
                     <div className="mb-3">
                       <button
                         className="mb-1.5 block w-full rounded-md bg-red-500 px-2 py-1.5 text-center text-white hover:bg-red-600"
-                        // onClick={"listingNft"}
+                        onClick={listingNft}
                       >
                         List My Nft
                       </button>
                       <button
                         className="mb-1.5 block w-[30px] rounded-md bg-red-500 px-2 py-1.5 text-center text-white hover:bg-red-600"
-                        // onClick={() => setOpenInputModal(!openInputModal)}
+                        onClick={() => setOpenInputModal(!openInputModal)}
                       >
                         X
                       </button>
@@ -173,7 +302,7 @@ const NftDetailPage = () => {
               </div>
             </div>
           </div>
-        )} */}
+        )}
       </section>
     </>
   );

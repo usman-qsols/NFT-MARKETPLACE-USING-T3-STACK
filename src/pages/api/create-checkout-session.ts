@@ -2,7 +2,16 @@ import { NextApiRequest, NextApiResponse } from "next";
 const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 
 export default async (req: NextApiRequest, res: NextApiResponse) => {
-  const { items, email, p_id, ownerAddress } = req.body;
+  const {
+    items,
+    email,
+    // p_id,
+    ownerAddress,
+    // oldOwnerAddress,
+    price,
+    // tokenId,
+    // amount,
+  } = req.body;
 
   const transformedItems = items.map((item: any) => ({
     quantity: 1,
@@ -23,8 +32,12 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
     cancel_url: `http://localhost:3000/checkout`,
     metadata: {
       email,
-      p_id,
+      // p_id,
       ownerAddress,
+      // oldOwnerAddress,
+      price,
+      // tokenId,
+      // amount,
     },
   });
   res.status(200).json({ id: session.id });
