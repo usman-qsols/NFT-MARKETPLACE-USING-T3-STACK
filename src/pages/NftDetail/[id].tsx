@@ -184,19 +184,27 @@ const NftDetailPage = () => {
   const buyingSuccess = buyTxIsSuccess;
 
   async function buyingNft(e: any) {
+    // buyNft();
     e.preventDefault();
     console.log("helloo");
 
     if (buyNft) {
+      console.log("helloo 1");
       buyNft();
+      console.log("helloo 2");
+
       console.log("hash", buyData?.hash);
       // setTokenId(tokenIdData.toString());
       // setListingModalOpen(false);
     }
+    if (true) {
+      console.log("helloo 4");
+    }
+    console.log("hellow 3");
     if (buyWaitError) {
       alert(buyWaitError);
     }
-    // console.log(tokenId);
+    console.log("token id", data?.tokenId);
 
     // updateBuyNft.mutateAsync({
     //   id: data?.id,

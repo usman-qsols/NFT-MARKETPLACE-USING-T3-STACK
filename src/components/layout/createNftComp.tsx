@@ -40,17 +40,17 @@ const createNftComp = () => {
   const { address, isConnected } = useAccount();
   console.log("Add", address);
 
-  const handleClick = () => {
-    mutateAsync({
-      title: title,
-      price: price,
-      description: description,
-      ipfsHash: ipfsUrl,
-      ownerAddress: "0x000000000000000000000000000000000",
-      tokenId: "1",
-      active: true,
-    });
-  };
+  // const handleClick = () => {
+  //   mutateAsync({
+  //     title: title,
+  //     price: price,
+  //     description: description,
+  //     ipfsHash: ipfsUrl,
+  //     ownerAddress: "0x000000000000000000000000000000000",
+  //     tokenId: "1",
+  //     active: true,
+  //   });
+  // };
 
   async function OnChangeFile(e: any) {
     var file = e.target.files[0];

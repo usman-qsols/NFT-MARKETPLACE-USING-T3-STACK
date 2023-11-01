@@ -1,5 +1,6 @@
 import React from "react";
 import Link from "next/link";
+import { useState } from "react";
 import {
   usePrepareContractWrite,
   useContractWrite,
@@ -16,57 +17,70 @@ import MyTokenAddress from "../components/contractAddressAndJson/MyToken-address
 import LoadingModal from "../components/layout/loader";
 
 const success = () => {
-  // const { config: buyConfig } = usePrepareContractWrite({
-  //   address: "0xB35610f89D0d8EC1aC3F2F3887475eB16A78BC35",
-  //   abi: T3MarketJson.abi,
-  //   functionName: "buy",
-  //   args: [payload?.tokenId, payload?._amount],
-  // });
-  // const {
-  //   data: buyData,
-  //   isLoading: listIsLoading,
-  //   isSuccess: listIsSuccess,
-  //   write: listMyNft,
-  // } = useContractWrite(buyConfig);
+  const [amount, setAmount] = useState("");
+  const { config: buyConfig } = usePrepareContractWrite({
+    address: "0x51c144F49e4a8C0523AF67F5698Bd970C1DB6db6",
+    abi: MyTokenJson.abi,
+    functionName: "approve",
+    args: ["0xB35610f89D0d8EC1aC3F2F3887475eB16A78BC35", amount],
+  });
+  const {
+    data: approveData,
+    isLoading: approveIsLoading,
+    isSuccess: approveIsSuccess,
+    write: approveTokens,
+  } = useContractWrite(buyConfig);
 
-  // const {
-  //   data: buyWaitData,
-  //   isError: buyWaitError,
-  //   isSuccess: buyTxIsSuccess,
-  // } = useWaitForTransaction({
-  //   hash: buyData?.hash,
-  // });
+  const {
+    data: approveWaitData,
+    isError: approveWaitError,
+    isSuccess: approveTxIsSuccess,
+  } = useWaitForTransaction({
+    hash: approveData?.hash,
+  });
 
   // const listingSuccess = buyTxIsSuccess;
 
-  // useEffect(() => {
-  //   async function listingNft(e: any) {
-  //     e.preventDefault();
-  //     try {
-  //       if (listMyNft) {
-  //         listMyNft();
-  //         console.log("hash", buyData?.hash);
-  //       }
-  //       if (buyWaitError) {
-  //         alert(buyWaitError);
-  //       }
-  //     } catch (error) {
-  //       alert(error);
-  //     }
-  //   }
-  // }, [payload]);
+  async function approveNft(e: any) {
+    e.preventDefault();
+    try {
+      if (approveTokens) {
+        console.log("approve");
+        approveTokens();
+        console.log("hash", approveData?.hash);
+      }
+      if (approveWaitError) {
+        alert(approveWaitError);
+      }
+    } catch (error) {
+      alert(error);
+    }
+  }
 
   return (
     <div className="container">
       <p className="section-subtitle">PaymentStorm</p>
       <h2 className="h1 hero-title">Payment Successfully done!</h2>
       <p className="hero-text">
-        You can now buy Nfts equal to the tokens you just buy.
+        You can approve Marketplace to spend tokens own your behalf so you can
+        easily do your shopping without any issue.
       </p>
+      <input
+        // type="text"
+        className="newsletter-input mt-5"
+        placeholder="Enter amount of tokens"
+        onChange={(e) => {
+          setAmount(e.target.value);
+        }}
+        required
+      />
 
       <Link href={"/exploreNfts"}>
-        <button className="btn mb-[10px] flex h-[50px] w-[200px] justify-center">
-          <span>See Nfts</span>
+        <button
+          className="btn mb-[10px] flex h-[50px] w-[200px] justify-center"
+          onClick={approveNft}
+        >
+          <span>Approve Tokens</span>
         </button>
       </Link>
     </div>
