@@ -80,7 +80,11 @@ const success = () => {
           className="btn mb-[10px] flex h-[50px] w-[200px] justify-center"
           onClick={approveNft}
         >
-          <span>Approve Tokens</span>
+          <span>
+            {approveIsLoading
+              ? "Approving, please wait for a while"
+              : "Approve Tokens"}
+          </span>
         </button>
       </Link>
     </div>

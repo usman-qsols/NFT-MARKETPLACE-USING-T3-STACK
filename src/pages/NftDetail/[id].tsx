@@ -119,6 +119,10 @@ const NftDetailPage = () => {
   } = useWaitForTransaction({
     hash: listData?.hash,
     onSuccess: () => {
+      updateNftData.mutateAsync({
+        price: price,
+        active: true,
+      });
       router.push("/");
     },
   });
@@ -139,10 +143,10 @@ const NftDetailPage = () => {
       }
       // console.log(tokenId);
 
-      updateNftData.mutateAsync({
-        price: price,
-        active: true,
-      });
+      // updateNftData.mutateAsync({
+      //   price: price,
+      //   active: true,
+      // });
     } catch (error) {
       alert(error);
     }
@@ -174,6 +178,8 @@ const NftDetailPage = () => {
     onSuccess: () => {
       updateBuyNft.mutateAsync({
         id: data?.id,
+        ownerAddress: address,
+        price: "0",
         active: false,
       });
 
@@ -249,7 +255,7 @@ const NftDetailPage = () => {
                         className="ml-auto flex rounded border-0 bg-sky-600 px-6 py-2 text-white hover:bg-sky-800 focus:outline-none"
                         onClick={(e: any) => buyingNft(e)}
                       >
-                        {buyIsSuccess ? "Please Wait..." : "Buy Nft"}
+                        {buyIsLoading ? "Please Wait..." : "Buy Nft"}
                       </button>
                     )}
 
@@ -288,6 +294,9 @@ const NftDetailPage = () => {
                         placeholder="Enter Price"
                         className="block w-full rounded-md border border-gray-300 px-1.5 py-1 text-gray-500 focus:border-red-500 focus:outline-none focus:ring-1 focus:ring-red-500"
                         required={true}
+                        onChange={(e) => {
+                          setPrice(e.target.value);
+                        }}
                       />
                     </div>
 
@@ -296,7 +305,7 @@ const NftDetailPage = () => {
                         className="mb-1.5 block w-full rounded-md bg-red-500 px-2 py-1.5 text-center text-white hover:bg-red-600"
                         onClick={listingNft}
                       >
-                        List My Nft
+                        {listIsLoading ? "Listing..." : "List My Nft"}
                       </button>
                       <button
                         className="mb-1.5 block w-[30px] rounded-md bg-red-500 px-2 py-1.5 text-center text-white hover:bg-red-600"
